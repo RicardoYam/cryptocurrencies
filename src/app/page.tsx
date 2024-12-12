@@ -38,14 +38,21 @@ export default function Home() {
 
   const fetchCryptoData = async () => {
     try {
-      const response = await axios.get("/api/crypto");
+      // Use absolute URL with the deployed domain
+      const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+        : "http://localhost:3000";
+
+      const response = await axios.get(`${baseUrl}/api/crypto`);
       setCryptoData(response.data.data);
       setFilteredData(response.data.data);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
+        console.error("API Error:", error);
       } else {
         setError("An unexpected error occurred");
+        console.error("Unknown Error:", error);
       }
     } finally {
       setIsLoading(false);
