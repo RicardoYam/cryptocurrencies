@@ -41,8 +41,12 @@ export default function Home() {
       const response = await axios.get("/api/crypto");
       setCryptoData(response.data.data);
       setFilteredData(response.data.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +66,8 @@ export default function Home() {
       const sortedData = [...filteredData].sort((a, b) => {
         if (!newDirection) return 0;
 
-        let aValue: any;
-        let bValue: any;
+        let aValue: number | string;
+        let bValue: number | string;
 
         switch (columnName) {
           case "id":
@@ -88,11 +92,13 @@ export default function Home() {
 
         if (typeof aValue === "string") {
           return newDirection === "asc"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
+            ? aValue.localeCompare(String(bValue))
+            : String(bValue).localeCompare(String(aValue));
         }
 
-        return newDirection === "asc" ? aValue - bValue : bValue - aValue;
+        return newDirection === "asc"
+          ? (aValue as number) - (bValue as number)
+          : (bValue as number) - (aValue as number);
       });
 
       setFilteredData(sortedData);

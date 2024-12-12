@@ -29,9 +29,13 @@ export default async function handler(
     );
 
     res.status(200).json(response.data);
-  } catch (error: any) {
-    res
-      .status(error.response?.status || 500)
-      .json({ error: error.message || "An error occurred" });
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      res
+        .status(error.response?.status || 500)
+        .json({ error: error.message || "An error occurred" });
+    } else {
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
   }
 }
