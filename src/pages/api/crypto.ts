@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export default async function handler(
   req: NextApiRequest,
